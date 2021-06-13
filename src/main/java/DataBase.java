@@ -7,18 +7,18 @@ import java.sql.*;
 
 public class DataBase {
 
-    private static String fileName;
-    private static String url;
+    private final String fileName;
+    private final String url;
 
     public DataBase(String fileName) {
-        DataBase.fileName = fileName;
-        DataBase.url =  "jdbc:sqlite:" + fileName;
+        this.fileName = fileName;
+        this.url =  "jdbc:sqlite:" + fileName;
         createNewFile();
         createCardTable();
     }
 
     public void createNewFile() {
-        File file = new File(fileName);
+        File file = new File(this.fileName);
         if (!file.exists()) {
             try {
                 FileWriter fileWriter = new FileWriter(file);
@@ -39,7 +39,7 @@ public class DataBase {
                                 "balance"\tINTEGER DEFAULT 0
                 )""";
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(this.url);
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
@@ -52,14 +52,14 @@ public class DataBase {
 
         String sql = "INSERT INTO card(id,number,pin) VALUES(?,?,?)";
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(this.url);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             pstmt.setString(2, cardNumber);
             pstmt.setString(3, pin);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
         }
     }
 
@@ -67,7 +67,7 @@ public class DataBase {
 
         String sql = String.format("SELECT * FROM card WHERE number = '%s' and pin = '%s'", cardNumber, pin);
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(this.url);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             ResultSet rs = pstmt.executeQuery();
@@ -87,7 +87,7 @@ public class DataBase {
 
         String sql = String.format("SELECT * FROM card WHERE number = '%s'", cardNumber);
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(this.url);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             ResultSet rs = pstmt.executeQuery();
@@ -108,7 +108,7 @@ public class DataBase {
 
         String sql = String.format("UPDATE card SET balance = balance + %d WHERE number = '%s' AND pin = '%s'", income, card.getCardNumber(), card.getPin());
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(this.url);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.executeUpdate();
@@ -121,7 +121,7 @@ public class DataBase {
 
         String sql = String.format("DELETE FROM card WHERE id = %d AND number = '%s' AND pin = '%s' ", card.getId(), card.getCardNumber(), card.getPin());
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(this.url);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.executeUpdate();
