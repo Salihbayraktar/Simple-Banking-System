@@ -9,14 +9,6 @@ public class Card {
     public Card() {
         cardNumber = CardUtil.createRandomCardNumber();
         pin = CardUtil.createRandomPin();
-        System.out.printf("""
-                Your card has been created
-                Your card number:
-                %s
-                Your card PIN:
-                %s
-
-                """, cardNumber, pin);
     }
 
     public Card(int id, String cardNumber, String pin, int balance) {

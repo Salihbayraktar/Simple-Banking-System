@@ -47,29 +47,26 @@ public class Interface {
                             selection = scanner.nextInt();
                             scanner.nextLine();
                             switch (selection) {
-                                case 1 -> System.out.printf("Balance: %d\n", selectedCard.getBalance());
+                                case 1 -> System.out.printf("Balance: %d\n\n", selectedCard.getBalance());
                                 case 2 -> {
                                     System.out.println("Enter income:");
                                     int income = scanner.nextInt();
                                     selectedCard.addIncome(income);
                                     dataBase.addIncomeToCard(selectedCard, income);
-                                    System.out.println("Income was added!");
                                 }
                                 case 3 -> {
                                     System.out.println("Transfer\n" +
                                             "Enter card number:");
                                     String cardNumber = scanner.nextLine();
                                     if (CardUtil.checkLuhnNumber(cardNumber)) {
-                                        Card cardToBeTransferred = dataBase.getCard(cardNumber);
-                                        if (cardToBeTransferred != null) {
+                                        Card receiverCard = dataBase.getCard(cardNumber);
+                                        if (receiverCard != null) {
                                             System.out.println("Enter how much money you want to transfer:");
                                             int moneyToTransferred = scanner.nextInt();
                                             scanner.nextLine();
                                             if (selectedCard.getBalance() >= moneyToTransferred) {
-                                                dataBase.addIncomeToCard(selectedCard, -1 * moneyToTransferred);
+                                                dataBase.transferMoneyToAnotherAccount(selectedCard, receiverCard, moneyToTransferred);
                                                 selectedCard.addIncome(-1 * moneyToTransferred);
-                                                dataBase.addIncomeToCard(cardToBeTransferred, moneyToTransferred);
-                                                System.out.println("Success!\n");
                                             } else {
                                                 System.out.println("Not enough money!");
                                             }
@@ -82,7 +79,7 @@ public class Interface {
                                 }
                                 case 4 -> {
                                     dataBase.deleteCard(selectedCard);
-                                    System.out.println("The account has been closed!");
+
                                     logIn = false;
                                 }
                                 case 5 -> {

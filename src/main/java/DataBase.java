@@ -12,7 +12,7 @@ public class DataBase {
 
     public DataBase(String fileName) {
         this.fileName = fileName;
-        this.url =  "jdbc:sqlite:" + fileName;
+        this.url = "jdbc:sqlite:" + fileName;
         createNewFile();
         createCardTable();
     }
@@ -58,8 +58,17 @@ public class DataBase {
             pstmt.setString(2, cardNumber);
             pstmt.setString(3, pin);
             pstmt.executeUpdate();
+
+            System.out.printf("""
+                Your card has been created
+                Your card number:
+                %s
+                Your card PIN:
+                %s
+
+                """, cardNumber, pin);
         } catch (SQLException e) {
-            //System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -104,6 +113,29 @@ public class DataBase {
         return null;
     }
 
+    public void transferMoneyToAnotherAccount(Card senderCard, Card receiverCard, int amount) {
+
+        String senderSql = String.format("UPDATE card SET balance = balance - %d WHERE number = '%s' AND pin = '%s'", amount, senderCard.getCardNumber(), senderCard.getPin());
+        String receiverSql = String.format("UPDATE card SET balance = balance + %d WHERE number = '%s' AND pin = '%s'", amount, receiverCard.getCardNumber(), receiverCard.getPin());
+
+        try (Connection conn = DriverManager.getConnection(this.url)) {
+
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement senderStatement = conn.prepareStatement(senderSql);
+                 PreparedStatement receiverStatement = conn.prepareStatement(receiverSql)) {
+
+                senderStatement.executeUpdate();
+                receiverStatement.executeUpdate();
+
+                conn.commit();
+                System.out.println("Success!\n");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void addIncomeToCard(Card card, int income) {
 
         String sql = String.format("UPDATE card SET balance = balance + %d WHERE number = '%s' AND pin = '%s'", income, card.getCardNumber(), card.getPin());
@@ -112,6 +144,8 @@ public class DataBase {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.executeUpdate();
+
+            System.out.println("Income was added!");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -125,6 +159,8 @@ public class DataBase {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.executeUpdate();
+
+            System.out.println("The account has been closed!");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
