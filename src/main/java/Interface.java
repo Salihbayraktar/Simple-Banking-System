@@ -62,11 +62,11 @@ public class Interface {
                                         Card receiverCard = dataBase.getCard(cardNumber);
                                         if (receiverCard != null) {
                                             System.out.println("Enter how much money you want to transfer:");
-                                            int moneyToTransferred = scanner.nextInt();
+                                            int moneyToTransfer = scanner.nextInt();
                                             scanner.nextLine();
-                                            if (selectedCard.getBalance() >= moneyToTransferred) {
-                                                dataBase.transferMoneyToAnotherAccount(selectedCard, receiverCard, moneyToTransferred);
-                                                selectedCard.addIncome(-1 * moneyToTransferred);
+                                            if (selectedCard.getBalance() >= moneyToTransfer) {
+                                                dataBase.transferMoneyToAnotherAccount(selectedCard, receiverCard, moneyToTransfer);
+                                                selectedCard.addIncome(-1 * moneyToTransfer);
                                             } else {
                                                 System.out.println("Not enough money!");
                                             }
